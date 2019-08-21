@@ -26,4 +26,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function isAdmin(){
+        return $this->email === 'dulio@styde.net';
+    }
+
+    public static function findByEmail($email)
+    {
+        return static::where(compact('email'))->first();
+
+    }
 }
