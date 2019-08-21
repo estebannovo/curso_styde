@@ -11,4 +11,9 @@ class Profession extends Model
     public $timestamps = true; // False deshabilita la escritura en los cmapos created_at and updated_at
 
     protected $fillable = ['title']; //Atributos o campos que vamos a permitir cargar de forma masiva, o se aa travez de un array asociativo, con el metodo create entre otros metodos.
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }
