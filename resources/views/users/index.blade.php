@@ -4,7 +4,7 @@
 <h1>{{$title}}</h1>
 <ul>
     @forelse($users as $user)
-        <li>{{$user}}</li>
+        <li>{{$user->name}}, ({{$user->email}})</li>
     @empty
         <li>No hay usuarios registrados</li>
     @endforelse
