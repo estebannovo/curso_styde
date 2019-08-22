@@ -9,7 +9,7 @@
         {{--<a href="{{url()->previous()}}" class="">Regresar</a>--}}
         {{--<a href="{{action('UserController@index')}}" class="">Regresar al listado de usuarios</a>--}}
         {{--<a href="{{url('/usuarios')}}" class="">Regresar al listado de usuarios</a>--}}
-        <a href="{{route('users')}}" class="">Regresar al listado de usuarios</a>
+        <a href="{{route('users.index')}}" class="">Regresar al listado de usuarios</a>
     </p>
 @endsection
 
