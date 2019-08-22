@@ -26,14 +26,12 @@ class UserController extends Controller
         return view('users.index', compact('title', 'users'));
     }
 
-    public function show($id)
+    public function show(User $user)
     {
-        $user = User::findOrFail($id);
-
+        //$user = User::findOrFail($id);
         /*if($user==null){
             return \response()->view('errors.404', [], 404);
         }*/
-
         return view('users.show', compact('user'));
     }
 
