@@ -4,5 +4,12 @@
     <h1>Usuario #{{$user->id}}</h1>
     <p>Nombre del usuario: {{$user->name}}</p>
     <p>Correo electrónico: {{$user->email}}</p>
+    
+    <p>
+        {{--<a href="{{url()->previous()}}" class="">Regresar</a>--}}
+        {{--<a href="{{action('UserController@index')}}" class="">Regresar al listado de usuarios</a>--}}
+        {{--<a href="{{url('/usuarios')}}" class="">Regresar al listado de usuarios</a>--}}
+        <a href="{{route('users')}}" class="">Regresar al listado de usuarios</a>
+    </p>
 @endsection
 
