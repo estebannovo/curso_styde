@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Profession;
+use App\User;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -9,9 +12,23 @@ use Throwable;
 
 class UsersModuleTest extends TestCase
 {
+    use RefreshDatabase;
+
     /** @test */
     function it_shows_the_users_list()
     {
+        factory(Profession::class)->times(5)->create();
+
+        factory(User::class)->create([
+            'name' => 'Joel',
+            'profession_id' => Profession::all()->random()->id
+        ]);
+
+        factory(User::class)->create([
+            'name'=>'Ellie',
+            'profession_id' => Profession::all()->random()->id
+        ]);
+
         $this->get('/usuarios')
             ->assertStatus(200)
             ->assertSee('Listado de usuarios')
@@ -22,7 +39,9 @@ class UsersModuleTest extends TestCase
     /** @test */
     function it_shows_a_defaut_message_if_the_users_list_is_empty()
     {
-        $this->get('/usuarios?empty')
+        //DB::table('users')->truncate();
+
+        $this->get('/usuarios')
             ->assertStatus(200)
             ->assertSee('No hay usuarios registrados');
     }
