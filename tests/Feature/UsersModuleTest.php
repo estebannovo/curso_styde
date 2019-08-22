@@ -73,6 +73,29 @@ class UsersModuleTest extends TestCase
 
         $this->get('/usuarios/nuevo')
             ->assertStatus(200)
-            ->assertSee('Crear usuario nuevo');
+            ->assertSee('Crear usuario');
+    }
+
+    /** @test */
+    function it_crates_a_new_user(){
+        $this->withoutExceptionHandling();
+        $this->post('/usuarios', [
+            'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com',
+            'password' => 'laravel'
+        ])->assertRedirect(route('users.index'));
+
+           // ->assertSee('Procesando información...');
+
+        $this->assertDatabaseHas('users', [
+            'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com'
+        ]);
+
+        $this->assertCredentials([
+            'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com',
+            'password' => 'laravel'
+        ]);
     }
 }
