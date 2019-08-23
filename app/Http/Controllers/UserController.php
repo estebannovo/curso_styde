@@ -42,7 +42,18 @@ class UserController extends Controller
 
     public function store()
     {
-        $data = \request()->all();
+        $data = \request()->validate([
+           'name' => 'required'
+        ],
+        [
+             'name.required' => 'The field name is required'
+        ]);
+
+        /*if(empty($data['name'])){
+            return redirect('usuarios/nuevo')->withErrors([
+                'name' => 'The field name is required'
+            ]);
+        }*/
         User::create([
             'name'=> $data['name'],
             'email'=> $data['email'],

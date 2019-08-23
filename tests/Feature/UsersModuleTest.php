@@ -98,4 +98,25 @@ class UsersModuleTest extends TestCase
             'password' => 'laravel'
         ]);
     }
+
+    /** @test */
+    function the_name_is_required(){
+        //$this->withoutExceptionHandling();
+
+        $this
+            ->from('usuarios/nuevo')
+            ->post('/usuarios', [
+                'name'=> '',
+                'email'=> 'novo.esteban@gmail.com',
+                'password' => 'laravel'
+            ])
+            ->assertRedirect('usuarios/nuevo')
+            ->assertSessionHasErrors(['name' => 'The field name is required']);
+
+        /*$this->assertDatabaseMissing('users',[
+            'email'=> 'novo.esteban@gmail.com'
+        ]);*/
+
+        $this->assertEquals(0, User::count());
+    }
 }
