@@ -228,4 +228,24 @@ class UsersModuleTest extends TestCase
                 return $viewUser->id == $user->id;
             });
     }
+
+    /** @test */
+    function  it_updates_a_user()
+    {
+        $user = factory(User::class)->create();
+
+        $this->withoutExceptionHandling();
+
+        $this->put("/usuarios/{$user->id}", [
+            'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com',
+            'password' => 'laravel'
+        ])->assertRedirect("usuarios/{$user->id}");
+
+        $this->assertCredentials([
+            'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com',
+            'password' => 'laravel'
+        ]);
+    }
 }
