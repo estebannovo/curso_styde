@@ -43,7 +43,8 @@ class UserController extends Controller
     public function store()
     {
         $data = \request()->validate([
-           'name' => 'required'
+           'name' => 'required',
+            'email' => 'required|email',
         ],
         [
              'name.required' => 'The field name is required'
