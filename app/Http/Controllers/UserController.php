@@ -43,11 +43,14 @@ class UserController extends Controller
     public function store()
     {
         $data = \request()->validate([
-           'name' => 'required',
-            'email' => 'required|email',
+            'name' => 'required',
+            'email' => ['required','email','unique:users,email'],
+            'password' => 'required|min:6',
         ],
         [
-             'name.required' => 'The field name is required'
+            'name.required' => 'The field name is required',
+            'email.required' => 'The field email is required',
+            'password.required' => 'The field password is required'
         ]);
 
         /*if(empty($data['name'])){

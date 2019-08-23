@@ -119,4 +119,93 @@ class UsersModuleTest extends TestCase
 
         $this->assertEquals(0, User::count());
     }
+
+    /** @test */
+    function the_email_is_required(){
+        //$this->withoutExceptionHandling();
+
+        $this
+            ->from('usuarios/nuevo')
+            ->post('/usuarios', [
+                'name'=> 'Esteban Novo',
+                'email'=> '',
+                'password' => 'laravel'
+            ])
+            ->assertRedirect('usuarios/nuevo')
+            ->assertSessionHasErrors(['email' => 'The field email is required']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+
+    /** @test */
+    function the_password_is_required(){
+        //$this->withoutExceptionHandling();
+
+        $this
+            ->from('usuarios/nuevo')
+            ->post('/usuarios', [
+                'name'=> 'Esteban Novo',
+                'email'=> 'novo.esteban@gmail.com',
+                'password' => ''
+            ])
+            ->assertRedirect('usuarios/nuevo')
+            ->assertSessionHasErrors(['password' => 'The field password is required']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_email_must_be_valid(){
+        //$this->withoutExceptionHandling();
+
+        $this
+            ->from('usuarios/nuevo')
+            ->post('/usuarios', [
+                'name'=> 'Esteban Novo',
+                'email'=> 'correo-invalido-dev',
+                'password' => ''
+            ])
+            ->assertRedirect('usuarios/nuevo')
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertEquals(0, User::count());
+    }
+
+    /** @test */
+    function the_email_must_be_unique(){
+        //$this->withoutExceptionHandling();
+
+        factory(User::class)->create([
+            'email'=> 'novo.esteban@gmail.com',
+        ]);
+
+        $this
+            ->from('usuarios/nuevo')
+            ->post('/usuarios', [
+                'name'=> 'Esteban Novo',
+                'email'=> 'novo.esteban@gmail.com',
+                'password' => 'laravel'
+            ])
+            ->assertRedirect('usuarios/nuevo')
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertEquals(1, User::count());
+    }
+
+    /** @test */
+    function the_password_must_be_at_least_six_characters(){
+        $this
+            ->from('usuarios/nuevo')
+            ->post('/usuarios', [
+                'name'=> 'Esteban Novo',
+                'email'=> 'novo.esteban@gmail.com',
+                'password' => 'lar'
+            ])
+            ->assertRedirect('usuarios/nuevo')
+            ->assertSessionHasErrors(['password']);
+
+        $this->assertEquals(0, User::count());
+    }
+
 }
