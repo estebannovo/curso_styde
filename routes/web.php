@@ -27,10 +27,13 @@ Route::get('/usuarios/nuevo', 'UserController@create')
 Route::post('/usuarios', 'UserController@store')
     ->name('users.store');
 
+Route::get('usuarios/{user}/editar', 'UserController@edit')
+    ->name('users.edit');
+
 
 Route::get('/saludo/{name}/{nickname?}', 'WelcomeUserController');
 
 
-Route::get('/usuarios/{user_id}/edit', function ($user_id){
+/*Route::get('/usuarios/{user_id}/edit', function ($user_id){
    return "Editamos el usuario {$user_id}";
-})->where('user_id',  '[\d+]');
+})->where('user_id',  '[\d+]');*/

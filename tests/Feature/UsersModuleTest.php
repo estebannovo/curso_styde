@@ -195,6 +195,8 @@ class UsersModuleTest extends TestCase
 
     /** @test */
     function the_password_must_be_at_least_six_characters(){
+        //$this->withoutExceptionHandling();
+
         $this
             ->from('usuarios/nuevo')
             ->post('/usuarios', [
@@ -208,4 +210,22 @@ class UsersModuleTest extends TestCase
         $this->assertEquals(0, User::count());
     }
 
+    /** @test */
+    function  it_loads_the_edit_user_page()
+    {
+        //$this->withoutExceptionHandling();
+        $user = factory(User::class)->create([
+            /*'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com',
+            'password' => 'laravel'*/
+        ]);
+
+        $this->get("/usuarios/{$user->id}/editar")
+            ->assertStatus(200)
+            ->assertViewIs('users.edit')
+            ->assertSee('Editar usuario')
+            ->assertViewHas('user', function($viewUser) use ($user){
+                return $viewUser->id == $user->id;
+            });
+    }
 }
