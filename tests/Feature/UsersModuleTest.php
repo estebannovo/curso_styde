@@ -248,4 +248,118 @@ class UsersModuleTest extends TestCase
             'password' => 'laravel'
         ]);
     }
+
+    /** @test */
+    function  the_name_is_required_when_updating_a_user()
+    {
+        //$this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+
+        $this
+            ->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", [
+            'name'=> '',
+            'email'=> 'novo.esteban+2@gmail.com',
+            'password' => 'laravel'
+        ])
+        ->assertRedirect("usuarios/{$user->id}/editar")
+        ->assertSessionHasErrors(['name']);
+
+        $this->assertDatabaseMissing('users', ['email'=>'novo.esteban+2@gmail.com']);
+    }
+
+    /** @test */
+    function the_email_is_required_when_updating_a_user(){
+        //$this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+
+        $this
+            ->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", [
+                'name'=> 'Esteban Novo 2',
+                'email'=> '',
+                'password' => 'laravel'
+            ])
+            ->assertRedirect("usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertDatabaseMissing('users', ['name'=>'Esteban Novo 2']);
+    }
+
+    /** @test */
+    function the_password_is_required_when_updating_a_user(){
+        //$this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $this
+            ->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", [
+                'name'=> 'Esteban Novo 2',
+                'email'=> 'novo.esteban+3@gmail.com',
+                'password' => ''
+            ])
+            ->assertRedirect("usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors(['password']);
+
+        $this->assertDatabaseMissing('users', ['name'=>'Esteban Novo 2', 'email'=>'novo.esteban+3@gmail.com']);
+    }
+
+    /** @test */
+    function the_email_must_be_valid_when_updating_a_user(){
+        //$this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $this
+            ->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", [
+                'name'=> 'Esteban Novo 2',
+                'email'=> 'correo-no-valido',
+                'password' => 'laravel'
+            ])
+            ->assertRedirect("usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertDatabaseMissing('users', ['name'=>'Esteban Novo 2']);
+    }
+
+    /** @test */
+    function the_email_must_be_unique_when_updating_a_user(){
+        //$this->withoutExceptionHandling();
+        self::markTestIncomplete();
+        return;
+
+        $user = factory(User::class)->create([
+            'email'=> 'novo.esteban+3@gmail.com'
+        ]);
+        $this
+            ->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", [
+                'name'=> 'Esteban Novo 2',
+                'email'=> 'novo.esteban+3@gmail.com',
+                'password' => 'laravel'
+            ])
+            ->assertRedirect("usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors(['email']);
+
+        $this->assertDatabaseMissing('users', ['name'=>'Esteban Novo 2']);
+    }
+
+    /** @test */
+    function the_password_must_be_at_least_six_characters_when_updating_a_user(){
+        //$this->withoutExceptionHandling();
+        $user = factory(User::class)->create();
+        $this
+            ->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", [
+                'name'=> 'Esteban Novo 2',
+                'email'=> 'novo.esteban+3@gmail.com',
+                'password' => ''
+            ])
+            ->assertRedirect("usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors(['password']);
+
+        $this->assertDatabaseMissing('users', ['email'=>'novo.esteban+3@gmail.com']);
+    }
+
+
 }

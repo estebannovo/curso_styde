@@ -11,7 +11,8 @@
             </ul>
         </div>
     @endif
-    <form method="POST" action="{{url('usuarios')}}">
+    <form method="POST" action="{{url("usuarios/{$user->id}")}}">
+        {{method_field('PUT')}}
         {{csrf_field()}}
         <label for="name">Nombre: </label>
         <input type="text" name="name" placeholder="Type your full name" value="{{old('name', $user->name)}}">
