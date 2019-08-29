@@ -289,20 +289,29 @@ class UsersModuleTest extends TestCase
     }
 
     /** @test */
-    function the_password_is_required_when_updating_a_user(){
+    function the_password_is_optional_when_updating_a_user(){
+        $oldPassword = 'CLAVE_ANTERIOR';
         //$this->withoutExceptionHandling();
-        $user = factory(User::class)->create();
+        $user = factory(User::class)->create([
+            'password' => bcrypt($oldPassword),
+        ]);
+
         $this
             ->from("/usuarios/{$user->id}/editar")
             ->put("/usuarios/{$user->id}", [
                 'name'=> 'Esteban Novo 2',
                 'email'=> 'novo.esteban+3@gmail.com',
-                'password' => ''
+                'password' => '',
             ])
-            ->assertRedirect("usuarios/{$user->id}/editar")
-            ->assertSessionHasErrors(['password']);
+            ->assertRedirect("usuarios/{$user->id}"); // (user.show)
+            //->assertSessionHasErrors(['password']);
 
-        $this->assertDatabaseMissing('users', ['name'=>'Esteban Novo 2', 'email'=>'novo.esteban+3@gmail.com']);
+        //$this->assertDatabaseMissing('users', ['name'=>'Esteban Novo 2', 'email'=>'novo.esteban+3@gmail.com']);
+        $this->assertCredentials( [
+            'name'=>'Esteban Novo 2',
+            'email'=>'novo.esteban+3@gmail.com',
+            'password' => $oldPassword, //Very important
+        ]);
     }
 
     /** @test */
@@ -345,7 +354,7 @@ class UsersModuleTest extends TestCase
     }
 
     /** @test */
-    function the_password_must_be_at_least_six_characters_when_updating_a_user(){
+    /*function the_password_must_be_at_least_six_characters_when_updating_a_user(){
         //$this->withoutExceptionHandling();
         $user = factory(User::class)->create();
         $this
@@ -355,11 +364,11 @@ class UsersModuleTest extends TestCase
                 'email'=> 'novo.esteban+3@gmail.com',
                 'password' => ''
             ])
-            ->assertRedirect("usuarios/{$user->id}/editar")
-            ->assertSessionHasErrors(['password']);
+            ->assertRedirect("usuarios/{$user->id}/editar");
+            //->assertSessionHasErrors(['password']);
 
         $this->assertDatabaseMissing('users', ['email'=>'novo.esteban+3@gmail.com']);
-    }
+    }*/
 
 
 }
