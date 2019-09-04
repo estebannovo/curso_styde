@@ -374,6 +374,21 @@ class UsersModuleTest extends TestCase
 
 //        $this->assertDatabaseMissing('users', ['name'=>'Esteban Novo 2']);
     }
+    /** @test */
+    function it_deletes_a_user(){
+        $this->withoutExceptionHandling();
+
+        $user = factory(User::class)->create();
+
+        $this->delete("usuarios/{$user->id}")
+            ->assertRedirect('usuarios');
+
+        $this->assertDatabaseMissing('users', [
+            'id' => $user->id
+        ]);
+
+        //$this->assertSame(0, User::count());
+    }
 
     /** @test */
     /*function the_password_must_be_at_least_six_characters_when_updating_a_user(){
