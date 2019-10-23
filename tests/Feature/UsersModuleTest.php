@@ -82,7 +82,9 @@ class UsersModuleTest extends TestCase
         $this->post('/usuarios', [
             'name'=> 'Esteban Novo',
             'email'=> 'novo.esteban@gmail.com',
-            'password' => 'laravel'
+            'password' => 'laravel',
+            'bio' => 'Programador de Laravel y Vue.js',
+            'twitter' => 'https://twitter/estebannovo'
         ])->assertRedirect(route('users.index'));
 
            // ->assertSee('Procesando información...');
@@ -90,6 +92,12 @@ class UsersModuleTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name'=> 'Esteban Novo',
             'email'=> 'novo.esteban@gmail.com'
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'bio' => 'Programador de Laravel y Vue.js',
+            'twitter' => 'https://twitter/estebannovo',
+            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id
         ]);
 
         $this->assertCredentials([

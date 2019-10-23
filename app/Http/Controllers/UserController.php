@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateUserRequest;
 use App\User;
-use http\Env\Response;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -41,30 +39,9 @@ class UserController extends Controller
         return view('users.create');
     }
 
-    public function store()
+    public function store(CreateUserRequest $request)
     {
-        $data = \request()->validate([
-            'name' => 'required',
-            'email' => ['required','email','unique:users,email'],
-            'password' => 'required|min:6',
-        ],
-        [
-            'name.required' => 'The field name is required',
-            'email.required' => 'The field email is required',
-            'password.required' => 'The field password is required'
-        ]);
-
-        /*if(empty($data['name'])){
-            return redirect('usuarios/nuevo')->withErrors([
-                'name' => 'The field name is required'
-            ]);
-        }*/
-        User::create([
-            'name'=> $data['name'],
-            'email'=> $data['email'],
-            'password' => bcrypt($data['password'])
-        ]);
-
+        $request->createUser();
         return redirect()->route('users.index');
     }
 
