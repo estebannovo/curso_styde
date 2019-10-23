@@ -14,6 +14,8 @@ class UsersModuleTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $profession;
+
     /** @test */
     function it_shows_the_users_list()
     {
@@ -97,7 +99,8 @@ class UsersModuleTest extends TestCase
         $this->assertCredentials([
             'name'=> 'Esteban Novo',
             'email'=> 'novo.esteban@gmail.com',
-            'password' => 'laravel'
+            'password' => 'laravel',
+            'profession_id' => $this->profession->id
         ]);
     }
 
@@ -118,6 +121,33 @@ class UsersModuleTest extends TestCase
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Programador de Laravel y Vue.js',
             'twitter' => null,
+            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id
+        ]);
+
+        $this->assertCredentials([
+            'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com',
+            'password' => 'laravel'
+        ]);
+    }
+
+    /** @test */
+    function the_profession_id_field_is_optional(){
+        $this->withoutExceptionHandling();
+        $this->post('/usuarios', $this->getValidData([
+            'profession_id' => null
+        ]))->assertRedirect(route('users.index'));
+
+        // ->assertSee('Procesando información...');
+
+        $this->assertDatabaseHas('users', [
+            'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com',
+            'profession_id' => null,
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'bio' => 'Programador de Laravel y Vue.js',
             'user_id' => User::findByEmail('novo.esteban@gmail.com')->id
         ]);
 
@@ -195,6 +225,59 @@ class UsersModuleTest extends TestCase
 
         $this->assertEquals(0, User::count());
     }
+
+    /** @test */
+    function the_profession_must_be_valid(){
+        $this->handleValidationExceptions();
+
+        $this
+            ->from('usuarios/nuevo')
+            ->post('/usuarios', $this->getValidData([
+                'profession_id' => '999'
+            ]))
+            ->assertRedirect('usuarios/nuevo')
+            ->assertSessionHasErrors(['profession_id']);
+
+        $this->assertDatabaseEmpty('users');
+    }
+
+    /** @test */
+    function only_selectable_profession_are_valid(){
+        $this->handleValidationExceptions();
+
+        $nonSelectableProfession = factory(Profession::class)->create([
+            'selectable' => false
+        ]);
+
+        $this
+            ->from('usuarios/nuevo')
+            ->post('/usuarios', $this->getValidData([
+                'profession_id' => $nonSelectableProfession->id,
+            ]))
+            ->assertRedirect('usuarios/nuevo')
+            ->assertSessionHasErrors(['profession_id']);
+
+        $this->assertDatabaseEmpty('users');
+    }
+
+//    /** @test */
+//    function only_not_deleted_professions_can_be_selected(){
+//        $this->handleValidationExceptions();
+//
+//        $nonSelectableProfession = factory(Profession::class)->create([
+//            'deleted_at' => now()->format('Y-m-d'),
+//        ]);
+//
+//        $this
+//            ->from('usuarios/nuevo')
+//            ->post('/usuarios', $this->getValidData([
+//                'profession_id' => $nonSelectableProfession->id,
+//            ]))
+//            ->assertRedirect('usuarios/nuevo')
+//            ->assertSessionHasErrors(['profession_id']);
+//
+//        $this->assertDatabaseEmpty('users');
+//    }
 
     /** @test */
     function the_email_must_be_unique(){
@@ -417,10 +500,13 @@ class UsersModuleTest extends TestCase
      */
     protected function getValidData(array $custom = []): array
     {
+        $this->profession = factory(Profession::class)->create();
+
         return array_filter(array_merge([
             'name' => 'Esteban Novo',
             'email' => 'novo.esteban@gmail.com',
             'password' => 'laravel',
+            'profession_id' => $this->profession->id,
             'bio' => 'Programador de Laravel y Vue.js',
             'twitter' => 'https://twitter/estebannovo'
         ], $custom));
