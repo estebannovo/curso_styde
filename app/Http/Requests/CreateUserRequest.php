@@ -55,7 +55,7 @@ class CreateUserRequest extends FormRequest
 
             $user->profile()->create([
                 'bio' => $data['bio'],
-                'twitter' => $data['twitter']
+                'twitter' => array_get($data, 'twitter')
             ]);
         });
     }
