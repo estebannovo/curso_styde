@@ -1,9 +1,8 @@
 <?php
-
 use App\Profession;
 use App\User;
+use App\UserProfile;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
@@ -29,20 +28,44 @@ class UserSeeder extends Seeder
 
         $professionId = Profession::where('title','Desarrollador Back-End')->value('id');
 
-        factory(User::class)->create([
-            'name' => 'Esteban Novo',
-            'email' => 'novo.esteban@gmail.com',
+        //Generamos un usuario con datos Custom y lo guardamos en la variable $user
+        $user = factory(User::class)->create([
+            'name' => 'Duilio',
+            'email' => 'dulio@styde.net',
             'password' =>  bcrypt('laravel'),
-            'profession_id' => $professionId,
             'is_admin' => true
         ]);
 
-        factory(User::class)->create([
-            'profession_id' => Profession::all()->random()->id
+        //Usamos la variable $user para llamar a la funcion profile y crear/asignar un profile custom al usuario
+        $user->profile()->create([
+            'bio' => 'Programador, Profesor, editor, escritor, social media manager',
+            'profession_id' => $professionId,
         ]);
 
-        factory(User::class, 48)->create([
-            'profession_id' => Profession::all()->random()->id
+        //Creamos un usuario con una Biography custom y profession_id random
+        (factory(User::class)->create())->profile()->create([
+            'bio'=> 'Programador',
+            'profession_id' => Profession::all()->random()->id,
         ]);
+
+        //Creamos un usuario con profile dinámicamente, todo usando las factories con $faker
+        (factory(User::class)->create())->profile()->create(
+            factory(UserProfile::class)->raw()
+        );
+
+        //Aquí geramos un usuario sin profile
+        //factory(User::class)->create();
+
+//        //De esta forma generabamos los usuarios cuando el profession_id estaba en la tabla user
+//        factory(User::class, 48)->create([
+//            'profession_id' => Profession::all()->random()->id
+//        ]);
+
+        //Creamos 46 usuarios y un perfil para cada uno, el perfil se genera también con su factory (UserProfileFactory.php) que usa $faker para generar datos dinámicamente
+        factory(User::class, 46)->create()->each(function ($user){
+            $user->profile()->create(
+                factory(UserProfile::class)->raw()
+            );
+        });
     }
 }

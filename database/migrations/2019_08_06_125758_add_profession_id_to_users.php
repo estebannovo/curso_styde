@@ -14,8 +14,8 @@ class AddProfessionIdToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table){
-            $table->unsignedInteger('profession_id')->nullable()->after('id');
-            $table->foreign('profession_id')->references('id')->on('professions');
+//            $table->unsignedInteger('profession_id')->nullable()->after('id');
+//            $table->foreign('profession_id')->references('id')->on('professions');
         });
     }
 
@@ -27,8 +27,8 @@ class AddProfessionIdToUsers extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table){
-           $table->dropForeign(['profession_id']);
-           $table->dropColumn('profession_id');
+//           $table->dropForeign(['profession_id']);
+//           $table->dropColumn('profession_id');
         });
     }
 }

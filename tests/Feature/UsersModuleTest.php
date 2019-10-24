@@ -23,12 +23,12 @@ class UsersModuleTest extends TestCase
 
         factory(User::class)->create([
             'name' => 'Joel',
-            'profession_id' => Profession::all()->random()->id
+            //'profession_id' => Profession::all()->random()->id
         ]);
 
         factory(User::class)->create([
             'name'=>'Ellie',
-            'profession_id' => Profession::all()->random()->id
+            //'profession_id' => Profession::all()->random()->id
         ]);
 
         $this->get('/usuarios')
@@ -42,7 +42,7 @@ class UsersModuleTest extends TestCase
     function it_shows_a_defaut_message_if_the_users_list_is_empty()
     {
         //DB::table('users')->truncate();
-        
+
         $this->get('/usuarios')
             ->assertStatus(200)
             ->assertSee('No hay usuarios registrados');
@@ -73,13 +73,18 @@ class UsersModuleTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
+        $profession = factory(Profession::class)->create();
+
         $this->get('/usuarios/nuevo')
             ->assertStatus(200)
-            ->assertSee('Crear usuario');
+            ->assertSee('Crear usuario')
+            ->assertViewHas('professions', function ($professions) use($profession){
+                return $professions->contains($profession);
+            });
     }
 
     /** @test */
-    function it_crates_a_new_user(){
+    function it_creates_a_new_user(){
         $this->withoutExceptionHandling();
         $this->post('/usuarios', $this->getValidData())->assertRedirect(route('users.index'));
 
@@ -90,17 +95,18 @@ class UsersModuleTest extends TestCase
             'email'=> 'novo.esteban@gmail.com'
         ]);
 
-        $this->assertDatabaseHas('user_profiles', [
-            'bio' => 'Programador de Laravel y Vue.js',
-            'twitter' => 'https://twitter/estebannovo',
-            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id
-        ]);
-
         $this->assertCredentials([
             'name'=> 'Esteban Novo',
             'email'=> 'novo.esteban@gmail.com',
             'password' => 'laravel',
-            'profession_id' => $this->profession->id
+
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'bio' => 'Programador de Laravel y Vue.js',
+            'twitter' => 'https://twitter/estebannovo',
+            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id,
+            'profession_id' => $this->profession->id,
         ]);
     }
 
@@ -133,7 +139,7 @@ class UsersModuleTest extends TestCase
 
     /** @test */
     function the_profession_id_field_is_optional(){
-        $this->withoutExceptionHandling();
+        //$this->withoutExceptionHandling();
         $this->post('/usuarios', $this->getValidData([
             'profession_id' => null
         ]))->assertRedirect(route('users.index'));
@@ -143,12 +149,12 @@ class UsersModuleTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name'=> 'Esteban Novo',
             'email'=> 'novo.esteban@gmail.com',
-            'profession_id' => null,
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Programador de Laravel y Vue.js',
-            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id
+            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id,
+            'profession_id' => null,
         ]);
 
         $this->assertCredentials([
@@ -262,7 +268,8 @@ class UsersModuleTest extends TestCase
 
 //    /** @test */
 //    function only_not_deleted_professions_can_be_selected(){
-//        $this->handleValidationExceptions();
+//        //$this->handleValidationExceptions();
+//        $this->withoutExceptionHandling();
 //
 //        $nonSelectableProfession = factory(Profession::class)->create([
 //            'deleted_at' => now()->format('Y-m-d'),
@@ -339,7 +346,7 @@ class UsersModuleTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $this->withoutExceptionHandling();
+        //$this->withoutExceptionHandling();
 
         $this->put("/usuarios/{$user->id}", [
             'name'=> 'Esteban Novo',
@@ -502,14 +509,24 @@ class UsersModuleTest extends TestCase
     {
         $this->profession = factory(Profession::class)->create();
 
-        return array_filter(array_merge([
+        /*return array_filter(array_merge([
             'name' => 'Esteban Novo',
             'email' => 'novo.esteban@gmail.com',
             'password' => 'laravel',
             'profession_id' => $this->profession->id,
             'bio' => 'Programador de Laravel y Vue.js',
             'twitter' => 'https://twitter/estebannovo'
-        ], $custom));
+        ], $custom));*/
+
+        //Quitamos el array_filter para que no se eliminen las llaves con valor null ya que en la validación se indica que el campo debe estar presente
+        return array_merge([
+            'name' => 'Esteban Novo',
+            'email' => 'novo.esteban@gmail.com',
+            'password' => 'laravel',
+            'profession_id' => $this->profession->id,
+            'bio' => 'Programador de Laravel y Vue.js',
+            'twitter' => 'https://twitter/estebannovo'
+        ], $custom);
     }
 
     /** @test */

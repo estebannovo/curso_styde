@@ -52,6 +52,17 @@
                     @endif
                 </div>
 
+                <div class="form-group">
+                    <label for="profession_id">Profession: </label>
+                    <select name="profession_id" id="profession_id" class="form-control">
+                        <option value="">Select one profession</option>
+                        @foreach($professions as $profession)
+                            <option value="{{$profession->id}}" {{old('profession_id') == $profession->id ? ' selected': ''}}>
+                                {{$profession->title}}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <div class="form-group">
                     <label for="twitter">Twitter account: </label>

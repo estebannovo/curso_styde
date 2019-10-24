@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use phpDocumentor\Reflection\Types\Nullable;
 
 class CreateUserRequest extends FormRequest
 {
@@ -31,9 +32,12 @@ class CreateUserRequest extends FormRequest
             'email' => ['required','email','unique:users,email'],
             'password' => 'required|min:6',
             'bio' => 'required',
-            'twitter' =>  ['nullable', 'url'],
+            'twitter' =>  ['nullable', 'url', 'present'],
             //'profession_id'=> 'exists:professions,id',
-            'profession_id'=> Rule::exists('professions', 'id')->where('selectable', true),
+            'profession_id'=> [
+                'nullable', 'present',
+                //'nullable',
+                Rule::exists('professions', 'id')->where('selectable', true)],
             //'profession_id'=> Rule::exists('professions', 'id')->whereNull('deleted_at'), //Para la prueba (Test Case) only_not_deleted_professions_can_be_selected()
         ];
     }
@@ -55,12 +59,16 @@ class CreateUserRequest extends FormRequest
                 'name'=> $data['name'],
                 'email'=> $data['email'],
                 'password' => bcrypt($data['password']),
-                'profession_id'=> $data['profession_id']?? null,
+                //'profession_id'=> array_get('profession_id')
+                //'profession_id'=> $data['profession_id']?? null,
             ]);
 
             $user->profile()->create([
                 'bio' => $data['bio'],
-                'twitter' => $data['twitter'] ?? null,
+                'twitter' => $data['twitter'], //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
+                //'twitter' => $data['twitter'] ?? null,
+                //'profession_id'=> $data['profession_id']?? null,
+                'profession_id'=> $data['profession_id'], //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
             ]);
         });
     }
