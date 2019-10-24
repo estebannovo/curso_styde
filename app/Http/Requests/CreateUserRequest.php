@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Profession;
 use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
@@ -37,8 +38,11 @@ class CreateUserRequest extends FormRequest
             'profession_id'=> [
                 'nullable', 'present',
                 //'nullable',
-                Rule::exists('professions', 'id')->where('selectable', true)],
+                Rule::exists('professions', 'id')->where('selectable', true),
+                'required_without:other_profession'
+            ],
             //'profession_id'=> Rule::exists('professions', 'id')->whereNull('deleted_at'), //Para la prueba (Test Case) only_not_deleted_professions_can_be_selected()
+            'other_profession' => 'required_without:profession_id',
         ];
     }
 
@@ -55,6 +59,15 @@ class CreateUserRequest extends FormRequest
         DB::transaction(function (){
             $data = $this->validated();
 
+            //Si no viene una profession_id es porque viene other_profession, entonces, creamos la nueva proffesion para poder insertarla
+            if(is_null($data['profession_id'])){
+                $profession_id = Profession::create([
+                    'title'=> $data['other_profession'],
+                ])->id;
+            }else{
+                $profession_id = $data['profession_id'];
+            }
+
             $user = User::create([
                 'name'=> $data['name'],
                 'email'=> $data['email'],
@@ -68,7 +81,7 @@ class CreateUserRequest extends FormRequest
                 'twitter' => $data['twitter'], //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
                 //'twitter' => $data['twitter'] ?? null,
                 //'profession_id'=> $data['profession_id']?? null,
-                'profession_id'=> $data['profession_id'], //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
+                'profession_id'=> $profession_id, //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
             ]);
         });
     }

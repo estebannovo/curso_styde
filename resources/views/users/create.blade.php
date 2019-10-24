@@ -65,6 +65,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="other_profession">Other profession: </label>
+                    <input type="text" class="form-control" name="other_profession" id="other_profession" placeholder="Complete here if your profession is not on the list" value="{{old('other_profession')}}">
+                    @if($errors->has('other_profession'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('other_profession') }}
+                        </div>
+                    @endif
+                </div>
+
+                <div class="form-group">
                     <label for="twitter">Twitter account: </label>
                     <input type="text" class="form-control" name="twitter" placeholder="Type your twitter account" value="{{old('twitter')}}">
                     @if($errors->has('twitter'))
@@ -82,3 +92,14 @@
 
 @endsection
 
+@section('jquery')
+    @parent
+    console.log('Template: create.blade.php');
+    $('#profession_id').on('change', function() {
+        if( this.value != "" ){
+            $('#other_profession').parent().hide();
+        }else{
+            $('#other_profession').parent().show();
+        }
+    });
+@endsection

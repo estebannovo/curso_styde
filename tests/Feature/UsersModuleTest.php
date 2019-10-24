@@ -86,6 +86,7 @@ class UsersModuleTest extends TestCase
     /** @test */
     function it_creates_a_new_user(){
         $this->withoutExceptionHandling();
+
         $this->post('/usuarios', $this->getValidData())->assertRedirect(route('users.index'));
 
            // ->assertSee('Procesando información...');
@@ -99,7 +100,6 @@ class UsersModuleTest extends TestCase
             'name'=> 'Esteban Novo',
             'email'=> 'novo.esteban@gmail.com',
             'password' => 'laravel',
-
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
@@ -138,13 +138,17 @@ class UsersModuleTest extends TestCase
     }
 
     /** @test */
-    function the_profession_id_field_is_optional(){
+    function the_profession_id_is_absent_but_another_profession_is_passed(){
         //$this->withoutExceptionHandling();
         $this->post('/usuarios', $this->getValidData([
-            'profession_id' => null
+            'profession_id' => null,
+            'other_profession' => 'new profession',
         ]))->assertRedirect(route('users.index'));
 
         // ->assertSee('Procesando información...');
+
+        //Obtenemos la nueva profession (Other Profession) que fue insertada al no pasar el profession_id
+        $new_profession_id = Profession::where('title','new profession')->orderBy('id', 'DESC')->get()->last()->id;
 
         $this->assertDatabaseHas('users', [
             'name'=> 'Esteban Novo',
@@ -154,7 +158,7 @@ class UsersModuleTest extends TestCase
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Programador de Laravel y Vue.js',
             'user_id' => User::findByEmail('novo.esteban@gmail.com')->id,
-            'profession_id' => null,
+            'profession_id' => $new_profession_id,
         ]);
 
         $this->assertCredentials([
@@ -164,6 +168,23 @@ class UsersModuleTest extends TestCase
         ]);
     }
 
+    /** @test */
+    function the_other_profession_is_absent_but_profession_id_is_passed(){
+        $this->post('/usuarios', $this->getValidData([
+            'other_profession' => null,
+        ]))->assertRedirect(route('users.index'));
+
+        $this->assertDatabaseHas('users', [
+            'name'=> 'Esteban Novo',
+            'email'=> 'novo.esteban@gmail.com',
+        ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+            'bio' => 'Programador de Laravel y Vue.js',
+            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id,
+            'profession_id' => $this->profession->id,
+        ]);
+    }
 
     /** @test */
     function the_name_is_required(){
@@ -509,6 +530,8 @@ class UsersModuleTest extends TestCase
     {
         $this->profession = factory(Profession::class)->create();
 
+        //dd($this->profession);
+
         /*return array_filter(array_merge([
             'name' => 'Esteban Novo',
             'email' => 'novo.esteban@gmail.com',
@@ -519,7 +542,7 @@ class UsersModuleTest extends TestCase
         ], $custom));*/
 
         //Quitamos el array_filter para que no se eliminen las llaves con valor null ya que en la validación se indica que el campo debe estar presente
-        return array_merge([
+        return  array_merge([
             'name' => 'Esteban Novo',
             'email' => 'novo.esteban@gmail.com',
             'password' => 'laravel',
