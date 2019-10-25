@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Profession;
+use App\Skill;
 use App\User;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -75,11 +76,17 @@ class UsersModuleTest extends TestCase
 
         $profession = factory(Profession::class)->create();
 
+        $skillsA = factory(Skill::class)->create();
+        $skillsB = factory(Skill::class)->create();
+
         $this->get('/usuarios/nuevo')
             ->assertStatus(200)
             ->assertSee('Crear usuario')
             ->assertViewHas('professions', function ($professions) use($profession){
                 return $professions->contains($profession);
+            })
+            ->assertViewHas('skills', function ($skills) use ($skillsA, $skillsB){
+                return $skills->contains($skillsA) && $skills->contains($skillsB);
             });
     }
 
