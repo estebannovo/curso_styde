@@ -43,6 +43,10 @@ class CreateUserRequest extends FormRequest
             ],
             //'profession_id'=> Rule::exists('professions', 'id')->whereNull('deleted_at'), //Para la prueba (Test Case) only_not_deleted_professions_can_be_selected()
             'other_profession' => 'required_without:profession_id',
+            'skills' => [
+                'array',
+                Rule::exists('skills', 'id')
+            ]
         ];
     }
 
@@ -83,6 +87,10 @@ class CreateUserRequest extends FormRequest
                 //'profession_id'=> $data['profession_id']?? null,
                 'profession_id'=> $profession_id, //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
             ]);
+
+            if( !empty($data['skills'])){
+                $user->skills()->attach($data['skills']);
+            }
         });
     }
 }
