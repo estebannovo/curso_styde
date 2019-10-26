@@ -115,6 +115,7 @@ class UsersModuleTest extends TestCase
             'name'=> 'Esteban Novo',
             'email'=> 'novo.esteban@gmail.com',
             'password' => 'laravel',
+            'role' => 'user',
         ]);
 
         $user = User::findByEmail('novo.esteban@gmail.com');
@@ -166,6 +167,31 @@ class UsersModuleTest extends TestCase
             'email'=> 'novo.esteban@gmail.com',
             'password' => 'laravel'
         ]);
+    }
+
+    /** @test */
+    function the_role_field_is_optional(){
+        $this->handleValidationExceptions();
+
+        $this->post('/usuarios', $this->getValidData([
+            'role' => null
+        ]))->assertRedirect(route('users.index'));
+
+        $this->assertDatabaseHas('users', [
+            'email'=> 'novo.esteban@gmail.com',
+            'role'=> 'user'
+        ]);
+    }
+
+    /** @test */
+    function the_role_must_be_valid(){
+        $this->handleValidationExceptions();
+
+        $this->post('/usuarios', $this->getValidData([
+            'role' => 'invalid-role'
+        ]))->assertSessionHasErrors('role');
+
+        $this->assertDatabaseEmpty('users');
     }
 
     /** @test */
@@ -612,7 +638,8 @@ class UsersModuleTest extends TestCase
             'password' => 'laravel',
             'profession_id' => $this->profession->id,
             'bio' => 'Programador de Laravel y Vue.js',
-            'twitter' => 'https://twitter/estebannovo'
+            'twitter' => 'https://twitter/estebannovo',
+            'role' => 'user'
         ], $custom);
     }
 

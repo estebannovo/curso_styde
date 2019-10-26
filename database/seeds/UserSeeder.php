@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             'name' => 'Duilio',
             'email' => 'dulio@styde.net',
             'password' =>  bcrypt('laravel'),
-            'is_admin' => true
+            'role' => 'admin'
         ]);
 
         //Usamos la variable $user para llamar a la funcion profile y crear/asignar un profile custom al usuario

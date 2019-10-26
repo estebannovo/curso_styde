@@ -99,6 +99,22 @@
                 </div>
                 @endforeach
 
+                <h5 class="mt-4">Rol</h5>
+
+                @foreach($roles as $role => $name)
+                <div class="form-check form-check-inline">
+                    <input
+                            class="form-check-input"
+                            type="radio"
+                            name="role"
+                            id="role_{{$role}}"
+                            value="{{$role}}"
+                            {{$role == old('role')?'checked':''}}
+                    >
+                    <label class="form-check-label" for="role_{{$role}}">{{$name}}</label>
+                </div>
+                @endforeach
+
                 <div class="form-group mt-4">
                     <button class="btn btn-primary" type="submit">Crear usuario</button>
                     <a href="{{route('users.index')}}" class="btn btn-link">Regresar al listado de usuarios</a>

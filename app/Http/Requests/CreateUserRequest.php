@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Profession;
+use App\Role;
 use App\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +47,8 @@ class CreateUserRequest extends FormRequest
             'skills' => [
                 'array',
                 Rule::exists('skills', 'id')
-            ]
+            ],
+            'role'=> ['nullable', Rule::in(Role::getList())],
         ];
     }
 
@@ -72,13 +74,17 @@ class CreateUserRequest extends FormRequest
                 $profession_id = $data['profession_id'];
             }
 
-            $user = User::create([
+            $user = new User([
                 'name'=> $data['name'],
                 'email'=> $data['email'],
                 'password' => bcrypt($data['password']),
                 //'profession_id'=> array_get('profession_id')
                 //'profession_id'=> $data['profession_id']?? null,
             ]);
+
+            $user->role = $data['role']??'user';
+
+            $user->save();
 
             $user->profile()->create([
                 'bio' => $data['bio'],
