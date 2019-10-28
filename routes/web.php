@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return 'Home';
+    return redirect('/home');
 });
 
 Route::get('/usuarios', 'UserController@index')
@@ -43,3 +43,6 @@ Route::get('/saludo/{name}/{nickname?}', 'WelcomeUserController');
 /*Route::get('/usuarios/{user_id}/edit', function ($user_id){
    return "Editamos el usuario {$user_id}";
 })->where('user_id',  '[\d+]');*/
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

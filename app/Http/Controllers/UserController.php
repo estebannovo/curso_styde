@@ -6,6 +6,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\Profession;
 use App\Skill;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -42,7 +43,11 @@ class UserController extends Controller
         $skills = Skill::orderBy('name', 'ASC')->get();
 
         $roles = trans('users.roles');
-        return view('users.create', compact('professions', 'skills', 'roles'));
+
+        $user = Auth::user();
+        $isAdmin = isset($user)?Auth::user()->isAdmin(): null;
+
+        return view('users.create', compact('professions', 'skills', 'roles', 'isAdmin'));
     }
 
     public function store(CreateUserRequest $request)
