@@ -66,7 +66,7 @@ class CreateUserRequest extends FormRequest
             $data = $this->validated();
 
             //Si no viene una profession_id es porque viene other_profession, entonces, creamos la nueva proffesion para poder insertarla
-            if(is_null($data['profession_id'])){
+            if( is_null($data['profession_id'])){
                 $profession_id = Profession::create([
                     'title'=> $data['other_profession'],
                 ])->id;

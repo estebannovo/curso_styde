@@ -13,17 +13,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        //$users = DB::table('users')->get();
         $users = User::all();
-        //dd($users);
 
         $title = 'Listado de usuarios';
-
-        //dd(compact('title', 'users'));
-
-        /*return view('users.index')
-            ->with('users', User::all())
-            ->with('title', 'Listado de Usuarios');*/
 
         return view('users.index', compact('title', 'users'));
     }

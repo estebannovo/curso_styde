@@ -2,16 +2,20 @@
 
 namespace Tests;
 
+use App\Profession;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication;
+    use CreatesApplication, TestHelpers;
 
-    protected function assertDatabaseEmpty($table, $connection = null){
-        $total = $this->getConnection($connection)->table($table)->count();
-        $this->assertSame(0, $total, sprintf(
-            "Failed asserting the table [%s] is empty. %s %s found.", $table, $total, str_plural('row', $total)
-        ));
+    protected $profession;
+    protected $defaultData = [];
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->withoutExceptionHandling();
     }
 }

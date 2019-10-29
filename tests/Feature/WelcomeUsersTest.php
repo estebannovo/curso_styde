@@ -12,8 +12,6 @@ class WelcomeUsersTest extends TestCase
     /** @test  */
     function it_welcomes_users_with_nickname()
     {
-        $this->withoutExceptionHandling();
-
         $this->get('/saludo/esteban/novo')
             ->assertStatus(200)
             ->assertSee("Bienvenido Esteban, tu apodo es novo");
@@ -22,8 +20,6 @@ class WelcomeUsersTest extends TestCase
     /** @test  */
     function it_welcomes_users_without_nickname()
     {
-        $this->withoutExceptionHandling();
-
         $this->get('/saludo/esteban')
             ->assertStatus(200)
             ->assertSee("Bienvenido Esteban");
@@ -38,6 +34,7 @@ class WelcomeUsersTest extends TestCase
 
     /** @test  */
     function it_users_edit_can_not_accept_text(){
+        $this->withExceptionHandling();
         $this->get('usuarios/texto/edit')
             ->assertStatus(404);
     }
