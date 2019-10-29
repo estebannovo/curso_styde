@@ -12,7 +12,7 @@ abstract class TestCase extends BaseTestCase
     protected $profession;
     protected $defaultData = [];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
