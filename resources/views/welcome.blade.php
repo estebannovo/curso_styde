@@ -79,7 +79,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Styde.net
+                    Laravel
                 </div>
 
                 <div class="links">
