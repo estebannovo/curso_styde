@@ -33,13 +33,14 @@ class UserController extends Controller
     {
         $professions = Profession::orderBy('title', 'ASC')->get();
         $skills = Skill::orderBy('name', 'ASC')->get();
-
         $roles = trans('users.roles');
+        //Create default users
+        $user = new User;
 
-        $user = Auth::user();
-        $isAdmin = isset($user)?Auth::user()->isAdmin(): null;
+        $loggedUser = Auth::user();
+        $isAdmin = isset($loggedUser)?$loggedUser->isAdmin(): null;
 
-        return view('users.create', compact('professions', 'skills', 'roles', 'isAdmin'));
+        return view('users.create', compact('professions', 'skills', 'roles', 'isAdmin', 'user'));
     }
 
     public function store(CreateUserRequest $request)
@@ -49,7 +50,13 @@ class UserController extends Controller
     }
 
     public function edit(User $user){
-        return view('users.edit', ['user'=> $user]);
+        $professions = Profession::orderBy('title', 'ASC')->get();
+        $skills = Skill::orderBy('name', 'ASC')->get();
+        $roles = trans('users.roles');
+
+        $isAdmin = isset($user)?$user->isAdmin(): null;
+
+        return view('users.edit', compact('professions', 'skills', 'roles', 'isAdmin', 'user'));
     }
 
     public function update(User $user){
