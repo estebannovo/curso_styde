@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Forms\UserForm;
 use App\Http\Requests\CreateUserRequest;
 use App\Profession;
 use App\Skill;
@@ -31,9 +32,11 @@ class UserController extends Controller
 
     public function create()
     {
-        //Create default users
-        $user = new User;
-        return view('users.create', compact('user'));
+        //$user = new User;
+
+        return new UserForm('users.create', new User);
+//        return view('users.create', compact('user'))
+//            ->with($this->formsData());
     }
 
     public function store(CreateUserRequest $request)
