@@ -53,7 +53,7 @@ class UpdateUserTest extends DuskTestCase
                 ->press('Actualizar usuario')
                 ->assertPathIs("/usuarios/{$this->user->id}/editar")
                 ->assertSeeIn('.alert.alert-danger', "The field name is required")
-                ->assertSeeIn('h1', "Editar usuario");
+                ->assertSeeIn('h4', "Editar usuario");
         });
     }
 }

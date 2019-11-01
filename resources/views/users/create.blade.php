@@ -1,25 +1,24 @@
 @extends('layout')
+
 @section('title', "Crear usuario")
+
 @section('content')
-    <div class="card">
-        <h4 class="card-header">
-            Crear usuario
-        </h4>
-        <div class="card-body">
-            @include('shared._errors')
+    @card
+        @slot('header', 'Crear usuario')
 
-            <form method="POST" action="{{url('usuarios')}}">
+        @include('shared._errors')
 
-                @include('users._fields')
+        <form method="POST" action="{{url('usuarios')}}">
 
-                <div class="form-group mt-4">
-                    <button class="btn btn-primary" type="submit">Crear usuario</button>
-                    <a href="{{route('users.index')}}" class="btn btn-link">Regresar al listado de usuarios</a>
-                </div>
+            @include('users._fields')
 
-            </form>
-        </div>
-    </div>
+            <div class="form-group mt-4">
+                <button class="btn btn-primary" type="submit">Crear usuario</button>
+                <a href="{{route('users.index')}}" class="btn btn-link">Regresar al listado de usuarios</a>
+            </div>
+
+        </form>
+    @endcard
 
 @endsection
 
