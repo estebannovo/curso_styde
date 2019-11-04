@@ -59,18 +59,35 @@ class UserController extends Controller
                 Rule::unique('users')->ignore($user->id)
             ],
             'password' => '',
+            'role' => '',
+            'bio' => '',
+            'profession_id' => '',
+            'twitter' => '',
+            'skills' => '',
         ],
             [
                 'name.required' => 'The field name is required',
                 'email.required' => 'The field email is required',
             ]);
 
-        if($data['password'] != null){
+        if ($data['password'] != null) {
             $data['password'] = bcrypt($data['password']);
-        }else{
+        } else {
             unset($data['password']);
         }
-        $user->update($data);
+
+        $user->fill($data);
+        $user->role = $data['role'] ?? 'user';
+        $user->save();
+
+        $user->profile()->update([
+            'bio' => $data['bio'],
+            'twitter' => $data['twitter'],
+            'profession_id'=> $data['profession_id'],
+        ]);
+
+        $user->skills()->sync($data['skills'] ?? []);
+
         return redirect()->route('users.show', ['user' => $user]);
     }
 

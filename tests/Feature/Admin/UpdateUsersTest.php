@@ -2,7 +2,10 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Profession;
+use App\Skill;
 use App\User;
+use App\UserProfile;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -41,14 +44,67 @@ class UpdateUsersTest extends TestCase
     function  it_updates_a_user()
     {
         $user = factory(User::class)->create();
+        $oldProfession = factory(Profession::class)->create();
 
-        $this->put("/usuarios/{$user->id}", $this->withData())->assertRedirect("usuarios/{$user->id}");
+        $user->profile()->save(factory(UserProfile::class)->make([
+            'profession_id'=> $oldProfession->id
+        ]));
+
+        $oldSkillA = factory(Skill::class)->create();
+        $oldSkillB = factory(Skill::class)->create();
+
+        $user->skills()->attach([$oldSkillA->id, $oldSkillB->id]);
+
+        $newSkillA = factory(Skill::class)->create();
+        $newSkillB = factory(Skill::class)->create();
+
+        $this->put("/usuarios/{$user->id}", $this->withData([
+            'skills'=>[
+                $newSkillA->id, $newSkillB->id
+            ],
+            'role' => 'admin'
+        ]))->assertRedirect("usuarios/{$user->id}");
 
         $this->assertCredentials([
             'name'=> 'Esteban Novo',
             'email'=> 'novo.esteban@gmail.com',
-            'password' => 'laravel'
+            'password' => 'laravel',
+            'role' => 'admin'
         ]);
+
+        $this->assertDatabaseHas('user_profiles', [
+           'user_id' =>  $user->id,
+           'bio' => 'Programador de Laravel y Vue.js',
+           'twitter' => 'https://twitter/estebannovo',
+           'profession_id' => $this->profession->id
+        ]);
+
+        $this->assertDatabaseCount('user_skill', 2);
+
+        $this->assertDatabaseHas('user_skill',[
+            'user_id' =>  $user->id,
+            'skill_id' => $newSkillA->id
+        ]);
+
+        $this->assertDatabaseHas('user_skill',[
+            'user_id' =>  $user->id,
+            'skill_id' => $newSkillB->id
+        ]);
+    }
+
+    /** @test */
+    function  it_detaches_all_the_skills_if_none_is_checked()
+    {
+        $user = factory(User::class)->create();
+
+        $oldSkillA = factory(Skill::class)->create();
+        $oldSkillB = factory(Skill::class)->create();
+        $user->skills()->attach([$oldSkillA->id, $oldSkillB->id]);
+
+        $this->put("/usuarios/{$user->id}", $this->withData())
+            ->assertRedirect("usuarios/{$user->id}");
+
+        $this->assertDatabaseEmpty('user_skill');
     }
 
     /** @test */
@@ -113,11 +169,11 @@ class UpdateUsersTest extends TestCase
     function the_users_email_can_stay_the_same(){
         $user = factory(User::class)->create();
         $this->from("/usuarios/{$user->id}/editar")
-            ->put("/usuarios/{$user->id}", [
+            ->put("/usuarios/{$user->id}", $this->withData([
                 'name'=> 'Esteban Novo 5',
                 'email'=> 'novo.esteban+5@gmail.com',
                 'password' => '1234535698',
-            ])
+            ]))
             ->assertRedirect("usuarios/{$user->id}"); // (user.show)
         //->assertSessionHasErrors(['password']);
 
