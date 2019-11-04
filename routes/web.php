@@ -46,3 +46,9 @@ Route::get('/saludo/{name}/{nickname?}', 'WelcomeUserController');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+// Profile
+Route::get('/editar-perfil/', 'ProfileController@edit');
+
+Route::put('/editar-perfil/', 'ProfileController@update');

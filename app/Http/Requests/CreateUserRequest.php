@@ -63,39 +63,37 @@ class CreateUserRequest extends FormRequest
 
     public function createUser(){
         DB::transaction(function (){
-            $data = $this->validated();
-
             //Si no viene una profession_id es porque viene other_profession, entonces, creamos la nueva proffesion para poder insertarla
-            if( is_null($data['profession_id'])){
+            if( is_null($this->profession_id)){
                 $profession_id = Profession::create([
-                    'title'=> $data['other_profession'],
+                    'title'=> $this->other_profession,
                 ])->id;
             }else{
-                $profession_id = $data['profession_id'];
+                $profession_id = $this->profession_id;
             }
 
             $user = new User([
-                'name'=> $data['name'],
-                'email'=> $data['email'],
-                'password' => bcrypt($data['password']),
+                'name'=> $this->name,
+                'email'=> $this->email,
+                'password' => bcrypt($this->password),
                 //'profession_id'=> array_get('profession_id')
                 //'profession_id'=> $data['profession_id']?? null,
             ]);
 
-            $user->role = $data['role']??'user';
+            $user->role = $this->role??'user';
 
             $user->save();
 
             $user->profile()->create([
-                'bio' => $data['bio'],
-                'twitter' => $data['twitter'], //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
+                'bio' => $this->bio,
+                'twitter' => $this->twitter, //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
                 //'twitter' => $data['twitter'] ?? null,
                 //'profession_id'=> $data['profession_id']?? null,
                 'profession_id'=> $profession_id, //Ya no necesitamos usar el operador de fusion de null porque en la validación le dijimos que el campo debe estar presente
             ]);
 
-            if( !empty($data['skills'])){
-                $user->skills()->attach($data['skills']);
+            if( $this->skills != null){
+                $user->skills()->attach($this->skills);
             }
         });
     }
