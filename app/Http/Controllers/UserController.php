@@ -80,11 +80,7 @@ class UserController extends Controller
         $user->role = $data['role'] ?? 'user';
         $user->save();
 
-        $user->profile()->update([
-            'bio' => $data['bio'],
-            'twitter' => $data['twitter'],
-            'profession_id'=> $data['profession_id'],
-        ]);
+        $user->profile->update($data);
 
         $user->skills()->sync($data['skills'] ?? []);
 
