@@ -126,6 +126,43 @@ class UpdateUsersTest extends TestCase
     }
 
     /** @test */
+    function  the_role_is_required()
+    {
+        $this->handleValidationExceptions();
+
+        $user = factory(User::class)->create();
+
+        $this
+            ->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", $this->withData([
+                'role'=> ''
+            ]))
+            ->assertRedirect("usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors(['role']);
+
+        $this->assertDatabaseMissing('users', ['email'=>'novo.esteban@gmail.com']);
+    }
+
+    /** @test */
+    function  the_bio_is_required()
+    {
+        $this->handleValidationExceptions();
+
+        $user = factory(User::class)->create();
+
+        $this
+            ->from("/usuarios/{$user->id}/editar")
+            ->put("/usuarios/{$user->id}", $this->withData([
+                'bio'=> ''
+            ]))
+            ->assertRedirect("usuarios/{$user->id}/editar")
+            ->assertSessionHasErrors(['bio']);
+
+        $this->assertDatabaseMissing('users', ['email'=>'novo.esteban@gmail.com']);
+    }
+
+
+    /** @test */
     function the_email_is_required(){
         $this->handleValidationExceptions();
 
