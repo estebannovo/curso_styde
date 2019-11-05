@@ -12,8 +12,8 @@ class Profession extends Model
 
     protected $fillable = ['title']; //Atributos o campos que vamos a permitir cargar de forma masiva, o se aa travez de un array asociativo, con el metodo create entre otros metodos.
 
-    public function users()
+    public function profiles()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(UserProfile::class);
     }
 }

@@ -52,3 +52,14 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/editar-perfil/', 'ProfileController@edit');
 
 Route::put('/editar-perfil/', 'ProfileController@update');
+
+// Professions
+Route::get('/professions/', 'ProfessionController@index')
+    ->name('profession.index');
+
+Route::delete('/professions/{profession}', 'ProfessionController@destroy')
+    ->name('profession.destroy');
+
+// Skills
+Route::get('/habilidades/', 'SkillController@index')
+    ->name('skills.index');
