@@ -29,6 +29,8 @@
                         @method('DELETE')
                         <button type="submit" class="btn btn-link"><span class="oi oi-trash"></span></button>
                     </form>
+                    @else
+                        <button type="button" class="btn btn-link" disabled><span class="oi oi-trash"></span></button>
                     @endif
                 </td>
             </tr>
