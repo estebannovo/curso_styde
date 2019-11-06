@@ -12,6 +12,7 @@
         <tr>
             <th scope="col">#</th>
             <th scope="col">Título</th>
+            <th scope="col">Asociaciones</th>
             <th scope="col">Acciones</th>
         </tr>
         </thead>
@@ -20,12 +21,17 @@
             <tr>
                 <th scope="row">{{ $skill->id }}</th>
                 <td>{{ $skill->name }}</td>
+                <td>{{ $skill->users_count }}</td>
                 <td>
-                    {{--<form action="{{ route('users.destroy', $user) }}" method="POST">--}}
-                    {{--{{ csrf_field() }}--}}
-                    {{--{{ method_field('DELETE') }}--}}
-                    {{--<button type="submit" class="btn btn-link"><span class="oi oi-trash"></span></button>--}}
-                    {{--</form>--}}
+                    @if ($skill->users_count == 0)
+                    <form action="{{ route('skill.destroy', $skill) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-link"><span class="oi oi-trash"></span></button>
+                    </form>
+                    @else
+                        <button type="button" class="btn btn-link" disabled><span class="oi oi-trash"></span></button>
+                    @endif
                 </td>
             </tr>
         @endforeach

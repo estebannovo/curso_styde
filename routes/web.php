@@ -61,5 +61,8 @@ Route::delete('/professions/{profession}', 'ProfessionController@destroy')
     ->name('profession.destroy');
 
 // Skills
-Route::get('/habilidades/', 'SkillController@index')
-    ->name('skills.index');
+Route::get('/skills/', 'SkillController@index')
+    ->name('skill.index');
+
+Route::delete('/skills/{skill}', 'SkillController@destroy')
+    ->name('skill.destroy');

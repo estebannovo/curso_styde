@@ -39,7 +39,7 @@
                     <a class="nav-link" href="{{ route('profession.index') }}">Profesiones</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('skills.index') }}">Habilidades</a>
+                    <a class="nav-link" href="{{ route('skill.index') }}">Habilidades</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('users.create') }}">Crear nuevo usuario</a>

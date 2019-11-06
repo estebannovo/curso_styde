@@ -11,11 +11,11 @@ class CreateUsersTest extends TestCase
     use RefreshDatabase;
 
     protected $defaultData = [
-        'name' => 'Esteban Novo',
-        'email' => 'novo.esteban@gmail.com',
+        'name' => 'Duilio Palacios',
+        'email' => 'duilio@styde.net',
         'password' => 'laravel',
         'bio' => 'Programador de Laravel y Vue.js',
-        'twitter' => 'https://twitter/estebannovo',
+        'twitter' => 'https://twitter/sileence',
         'role' => 'user'
     ];
 
@@ -53,21 +53,21 @@ class CreateUsersTest extends TestCase
         // ->assertSee('Procesando información...');
 
         $this->assertDatabaseHas('users', [
-            'name'=> 'Esteban Novo',
-            'email'=> 'novo.esteban@gmail.com'
+            'name'=> 'Duilio Palacios',
+            'email'=> 'duilio@styde.net'
         ]);
 
         $this->assertCredentials([
-            'name'=> 'Esteban Novo',
-            'email'=> 'novo.esteban@gmail.com',
+            'name'=> 'Duilio Palacios',
+            'email'=> 'duilio@styde.net',
             'password' => 'laravel',
             'role' => 'user',
         ]);
 
-        $user = User::findByEmail('novo.esteban@gmail.com');
+        $user = User::findByEmail('duilio@styde.net');
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Programador de Laravel y Vue.js',
-            'twitter' => 'https://twitter/estebannovo',
+            'twitter' => 'https://twitter/sileence',
             'user_id' => $user->id,
             'profession_id' => $this->profession->id,
         ]);
@@ -97,19 +97,19 @@ class CreateUsersTest extends TestCase
         // ->assertSee('Procesando información...');
 
         $this->assertDatabaseHas('users', [
-            'name'=> 'Esteban Novo',
-            'email'=> 'novo.esteban@gmail.com'
+            'name'=> 'Duilio Palacios',
+            'email'=> 'duilio@styde.net'
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Programador de Laravel y Vue.js',
             'twitter' => null,
-            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id
+            'user_id' => User::findByEmail('duilio@styde.net')->id
         ]);
 
         $this->assertCredentials([
-            'name'=> 'Esteban Novo',
-            'email'=> 'novo.esteban@gmail.com',
+            'name'=> 'Duilio Palacios',
+            'email'=> 'duilio@styde.net',
             'password' => 'laravel'
         ]);
     }
@@ -123,7 +123,7 @@ class CreateUsersTest extends TestCase
         ]))->assertRedirect(route('users.index'));
 
         $this->assertDatabaseHas('users', [
-            'email'=> 'novo.esteban@gmail.com',
+            'email'=> 'duilio@styde.net',
             'role'=> 'user'
         ]);
     }
@@ -152,19 +152,19 @@ class CreateUsersTest extends TestCase
         $new_profession_id = Profession::where('title','new profession')->orderBy('id', 'DESC')->get()->last()->id;
 
         $this->assertDatabaseHas('users', [
-            'name'=> 'Esteban Novo',
-            'email'=> 'novo.esteban@gmail.com',
+            'name'=> 'Duilio Palacios',
+            'email'=> 'duilio@styde.net',
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Programador de Laravel y Vue.js',
-            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id,
+            'user_id' => User::findByEmail('duilio@styde.net')->id,
             'profession_id' => $new_profession_id,
         ]);
 
         $this->assertCredentials([
-            'name'=> 'Esteban Novo',
-            'email'=> 'novo.esteban@gmail.com',
+            'name'=> 'Duilio Palacios',
+            'email'=> 'duilio@styde.net',
             'password' => 'laravel'
         ]);
     }
@@ -176,13 +176,13 @@ class CreateUsersTest extends TestCase
         ]))->assertRedirect(route('users.index'));
 
         $this->assertDatabaseHas('users', [
-            'name'=> 'Esteban Novo',
-            'email'=> 'novo.esteban@gmail.com',
+            'name'=> 'Duilio Palacios',
+            'email'=> 'duilio@styde.net',
         ]);
 
         $this->assertDatabaseHas('user_profiles', [
             'bio' => 'Programador de Laravel y Vue.js',
-            'user_id' => User::findByEmail('novo.esteban@gmail.com')->id,
+            'user_id' => User::findByEmail('duilio@styde.net')->id,
             'profession_id' => $this->profession->id,
         ]);
     }
@@ -197,7 +197,7 @@ class CreateUsersTest extends TestCase
             ->assertSessionHasErrors(['name' => 'The field name is required']);
 
         /*$this->assertDatabaseMissing('users',[
-            'email'=> 'novo.esteban@gmail.com'
+            'email'=> 'duilio@styde.net'
         ]);*/
 
         //$this->assertEquals(0, User::count());
@@ -339,11 +339,11 @@ class CreateUsersTest extends TestCase
         $this->handleValidationExceptions();
 
         factory(User::class)->create([
-            'email'=> 'novo.esteban@gmail.com',
+            'email'=> 'duilio@styde.net',
         ]);
 
         $this->post('/usuarios', $this->withData([
-                'email'=> 'novo.esteban@gmail.com'
+                'email'=> 'duilio@styde.net'
             ]))
             ->assertSessionHasErrors(['email']);
 
@@ -355,8 +355,8 @@ class CreateUsersTest extends TestCase
         $this->handleValidationExceptions();
 
         $this->post('/usuarios', [
-                'name'=> 'Esteban Novo',
-                'email'=> 'novo.esteban@gmail.com',
+                'name'=> 'Duilio Palacios',
+                'email'=> 'duilio@styde.net',
                 'password' => 'lar'
             ])
             ->assertSessionHasErrors(['password']);
