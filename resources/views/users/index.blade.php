@@ -31,6 +31,7 @@
                     <form action="{{route('users.destroy',$user)}}" method="POST">
                         @csrf
                         @method('DELETE')
+                        <a class="btn btn-link" title="Undo delete" href="{{route('user.restore',$user->id)}}"><span class="oi oi-action-undo"></span></a>
                         <button type="submit" class="btn btn-link" dusk="delete-{{$user->id}}"><span class="oi oi-circle-x"></span></button>
                     </form>
                 @else

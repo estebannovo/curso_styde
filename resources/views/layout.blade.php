@@ -44,6 +44,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('users.create') }}">Crear nuevo usuario</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('users.trashed') }}"><span class="oi oi-trash"> Trashed users</span></a>
+                </li>
             </ul>
             <form class="form-inline mt-2 mt-md-0">
                 <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">

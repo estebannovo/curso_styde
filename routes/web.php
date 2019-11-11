@@ -43,6 +43,9 @@ Route::delete('/usuarios/{id}', 'UserController@destroy')
 Route::patch('/usuarios/{user}/trash', 'UserController@trash')
     ->name('users.trash');
 
+Route::get('/usuarios/{id}/restore', 'UserController@restore')
+    ->name('user.restore');
+
 
 Route::get('/saludo/{name}/{nickname?}', 'WelcomeUserController');
 

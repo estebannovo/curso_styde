@@ -83,4 +83,13 @@ class UserController extends Controller
 
         return redirect()->route('users.index');
     }
+
+    public function restore($id)
+    {
+        $user = User::onlyTrashed()->where('id', $id)->firstOrFail();
+        $user->profile()->restore();
+        $user->restore();
+
+        return redirect()->route('users.index');
+    }
 }
