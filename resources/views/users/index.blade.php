@@ -27,14 +27,21 @@
             <td>{{$user->name}}</td>
             <td>{{$user->email}}</td>
             <td>
-
-                <form action="{{route('users.destroy',$user)}}" method="POST">
-                    {{csrf_field()}}
-                    {{method_field('DELETE')}}
+                @if ($user->trashed())
+                    <form action="{{route('users.destroy',$user)}}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-link" dusk="delete-{{$user->id}}"><span class="oi oi-circle-x"></span></button>
+                    </form>
+                @else
+                <form action="{{route('users.trash',$user)}}" method="POST">
+                    @csrf
+                    @method('PATCH')
                     <a class="btn btn-link" href="{{route('users.show',['user'=>$user->id])}}"><span class="oi oi-eye"></span></a>
                     <a class="btn btn-link" href="{{route('users.edit',$user)}}"><span class="oi oi-pencil"></span></a>
                     <button type="submit" class="btn btn-link" dusk="delete-{{$user->id}}"><span class="oi oi-trash"></span></button>
                 </form>
+                @endif
             </td>
         </tr>
         @endforeach

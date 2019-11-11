@@ -42,4 +42,27 @@ class ListUsersTest extends TestCase
             ->assertStatus(200)
             ->assertSee('No hay usuarios registrados');
     }
+
+    /** @test */
+    function it_shows_the_deleted_users()
+    {
+        factory(Profession::class)->times(5)->create();
+
+        factory(User::class)->create([
+            'name' => 'Joel',
+            'deleted_at' => now(),
+            //'profession_id' => Profession::all()->random()->id
+        ]);
+
+        factory(User::class)->create([
+            'name'=>'Ellie',
+            //'profession_id' => Profession::all()->random()->id
+        ]);
+
+        $this->get('/usuarios/trash')
+            ->assertStatus(200)
+            ->assertSee('Listado de usuarios en la papelera')
+            ->assertSee('Joel')
+            ->assertDontSee('Ellie');
+    }
 }

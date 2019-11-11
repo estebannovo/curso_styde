@@ -31,6 +31,8 @@ class CreateUserProfilesTable extends Migration
                 ->onDelete('CASCADE'); //Cuando borramos un usuario si tenemos que borrar todd su información relacionada por la nueva ley Europea GDPR.
 
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

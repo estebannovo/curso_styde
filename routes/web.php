@@ -17,6 +17,10 @@ Route::get('/', function () {
 
 Route::get('/usuarios', 'UserController@index')
     ->name('users.index');
+
+Route::get('/usuarios/trash', 'UserController@trashed')
+    ->name('users.trashed');
+
 Route::get('/usuarios/{user}', 'UserController@show')
     ->where('user', '[0-9]+')
     ->name('users.show');
@@ -33,8 +37,11 @@ Route::get('usuarios/{user}/editar', 'UserController@edit')
 Route::put('/usuarios/{user}', 'UserController@update')
     ->name('users.update');
 
-Route::delete('/usuarios/{user}', 'UserController@destroy')
+Route::delete('/usuarios/{id}', 'UserController@destroy')
     ->name('users.destroy');
+
+Route::patch('/usuarios/{user}/trash', 'UserController@trash')
+    ->name('users.trash');
 
 
 Route::get('/saludo/{name}/{nickname?}', 'WelcomeUserController');
