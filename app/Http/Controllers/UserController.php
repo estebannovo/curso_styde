@@ -9,7 +9,9 @@ use App\Profession;
 use App\Skill;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class UserController extends Controller
 {
@@ -20,15 +22,6 @@ class UserController extends Controller
         $title = 'Listado de usuarios';
 
         return view('users.index', compact('title', 'users'));
-    }
-
-    public function trashed()
-    {
-        $users = User::onlyTrashed()->get();
-
-        $title = 'Listado de usuarios eliminados';
-
-        return view('users.trashed', compact('title', 'users'));
     }
 
     public function show(User $user)
@@ -70,16 +63,28 @@ class UserController extends Controller
     {
         $user = User::onlyTrashed()->where('id', $id)->firstOrFail();
 
+        //Delete user profile
         $user->profile()->forceDelete();
+
+        //Delete relationship whith pivot table
+        $user->skills()->detach();
+        //$user->skills()->sync([]);
+
+        //Delete user
         $user->forceDelete();
 
-        return redirect()->route('users.trashed');
+        return redirect()->route('trashed.index');
     }
 
     public function trash(User $user)
     {
-        $user->delete();
         $user->profile()->delete();
+
+        DB::table('user_skill')
+            ->where('user_id', $user->id)
+            ->update(array('deleted_at' => DB::raw('NOW()')));
+
+        $user->delete();
 
         return redirect()->route('users.index');
     }
@@ -88,8 +93,30 @@ class UserController extends Controller
     {
         $user = User::onlyTrashed()->where('id', $id)->firstOrFail();
         $user->profile()->restore();
+
+        DB::table('user_skill')
+            ->where('user_id', $user->id)
+            ->update(array('deleted_at' => null));
+
         $user->restore();
 
         return redirect()->route('users.index');
+    }
+
+    public function destroyOldTrashedUsers()
+    {
+        $users = User::onlyTrashed()->where('deleted_at', '<=', DB::raw('(NOW() - INTERVAL 2 WEEK)'))->get();
+
+        $count = 0;
+        foreach ($users as $user){
+            $user->profile()->forceDelete();
+            $user->skills()->detach();
+            $user->forceDelete();
+
+            $count++;
+        }
+
+        return response("We have deleted {$count} users from the trash", 200)
+            ->header('Content-Type', 'text/html');
     }
 }

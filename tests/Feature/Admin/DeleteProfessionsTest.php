@@ -13,13 +13,31 @@ class DeleteProfessionsTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function it_deletes_a_profession()
-    {
+    function it_sends_a_profession_to_the_trash(){
         $profession = factory(Profession::class)->create();
 
-        $response = $this->delete("professions/{$profession->id}");
+        $this->patch("profession/{$profession->id}/trash")
+            ->assertRedirect('professions');
 
-        $response->assertRedirect();
+        // Option 1
+        $this->assertSoftDeleted('professions', [
+            'id' => $profession->id
+        ]);
+
+        // Option 2:
+        $profession->refresh();
+
+        $this->assertTrue($profession->trashed());
+    }
+
+    /** @test */
+    function it_completely_deletes_a_profession(){
+        $profession = factory(Profession::class)->create([
+            'deleted_at' => now()
+        ]);
+
+        $this->delete("profession/{$profession->id}")
+            ->assertRedirect(route('trashed.index'));
 
         $this->assertDatabaseEmpty('professions');
     }
@@ -35,7 +53,7 @@ class DeleteProfessionsTest extends TestCase
             'profession_id' => $profession->id
         ]);
 
-        $response = $this->delete("professions/{$profession->id}");
+        $response = $this->patch("profession/{$profession->id}/trash");
 
         $response->assertStatus(400);
 

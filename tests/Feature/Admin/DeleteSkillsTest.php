@@ -22,13 +22,31 @@ class DeleteSkillsTest extends TestCase
     ];
 
     /** @test */
-    public function it_deletes_a_skill()
-    {
+    function it_sends_a_skill_to_the_trash(){
         $skill = factory(Skill::class)->create();
 
-        $response = $this->delete("skills/{$skill->id}");
+        $this->patch("skill/{$skill->id}/trash")
+            ->assertRedirect(route('skill.index'));
 
-        $response->assertRedirect();
+        // Option 1
+        $this->assertSoftDeleted('skills', [
+            'id' => $skill->id
+        ]);
+
+        // Option 2:
+        $skill->refresh();
+
+        $this->assertTrue($skill->trashed());
+    }
+
+    /** @test */
+    function it_completely_deletes_a_skill(){
+        $skill = factory(Skill::class)->create([
+            'deleted_at' => now()
+        ]);
+
+        $this->delete("skill/{$skill->id}")
+            ->assertRedirect(route('trashed.index'));
 
         $this->assertDatabaseEmpty('skills');
     }
@@ -48,9 +66,13 @@ class DeleteSkillsTest extends TestCase
 
         $user = User::findByEmail('duilio+7@styde.net');
 
-        $response = $this->delete("skills/{$skill->id}");
+        $response = $this->patch("skill/{$skill->id}/trash");
 
         $response->assertStatus(400);
+
+        $this->assertDatabaseHas('skills', [
+            'id' => $skill->id
+        ]);
 
         $this->assertDatabaseHas('user_skill', [
             'skill_id' => $skill->id,

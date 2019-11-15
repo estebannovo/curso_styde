@@ -59,9 +59,9 @@ class ListUsersTest extends TestCase
             //'profession_id' => Profession::all()->random()->id
         ]);
 
-        $this->get('/usuarios/trash')
+        $this->get('/trahed-items/')
             ->assertStatus(200)
-            ->assertSee('Listado de usuarios en la papelera')
+            ->assertSee('Deleted users')
             ->assertSee('Joel')
             ->assertDontSee('Ellie');
     }

@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Profession extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'professions'; // si el nombre de la tabla es diferente al de la clase segun la nomeclatura se puede especificar aquí el nombre de la tabla.
 
     public $timestamps = true; // False deshabilita la escritura en los cmapos created_at and updated_at

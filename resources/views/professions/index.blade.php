@@ -24,9 +24,9 @@
                 <td>{{ $profession->profiles_count }}</td>
                 <td>
                     @if ($profession->profiles_count == 0)
-                    <form action="{{ route('profession.destroy', $profession) }}" method="POST">
+                    <form action="{{ route('profession.trash', $profession) }}" method="POST">
                         @csrf
-                        @method('DELETE')
+                        @method('PATCH')
                         <button type="submit" class="btn btn-link"><span class="oi oi-trash"></span></button>
                     </form>
                     @else

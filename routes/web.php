@@ -18,9 +18,6 @@ Route::get('/', function () {
 Route::get('/usuarios', 'UserController@index')
     ->name('users.index');
 
-Route::get('/usuarios/trash', 'UserController@trashed')
-    ->name('users.trashed');
-
 Route::get('/usuarios/{user}', 'UserController@show')
     ->where('user', '[0-9]+')
     ->name('users.show');
@@ -42,6 +39,10 @@ Route::delete('/usuarios/{id}', 'UserController@destroy')
 
 Route::patch('/usuarios/{user}/trash', 'UserController@trash')
     ->name('users.trash');
+
+Route::get('/usuarios/destroyOldUsers', 'UserController@destroyOldTrashedUsers')
+    ->name('users.destroyOldUsers');
+
 
 Route::get('/usuarios/{id}/restore', 'UserController@restore')
     ->name('user.restore');
@@ -67,12 +68,28 @@ Route::put('/editar-perfil/', 'ProfileController@update');
 Route::get('/professions/', 'ProfessionController@index')
     ->name('profession.index');
 
-Route::delete('/professions/{profession}', 'ProfessionController@destroy')
+Route::patch('/profession/{profession}/trash', 'ProfessionController@trash')
+    ->name('profession.trash');
+
+Route::delete('/profession/{id}', 'ProfessionController@destroy')
     ->name('profession.destroy');
+
+Route::get('/profession/{id}/restore', 'ProfessionController@restore')
+    ->name('profession.restore');
 
 // Skills
 Route::get('/skills/', 'SkillController@index')
     ->name('skill.index');
 
-Route::delete('/skills/{skill}', 'SkillController@destroy')
+Route::delete('/skill/{id}', 'SkillController@destroy')
     ->name('skill.destroy');
+
+Route::patch('/skill/{skill}/trash', 'SkillController@trash')
+    ->name('skill.trash');
+
+Route::get('/skill/{id}/restore', 'SkillController@restore')
+    ->name('skill.restore');
+
+//Trashed items
+Route::get('/trahed-items/', 'TrashController@index')
+    ->name('trashed.index');

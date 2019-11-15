@@ -24,9 +24,9 @@
                 <td>{{ $skill->users_count }}</td>
                 <td>
                     @if ($skill->users_count == 0)
-                    <form action="{{ route('skill.destroy', $skill) }}" method="POST">
+                    <form action="{{ route('skill.trash', $skill) }}" method="POST">
                     @csrf
-                    @method('DELETE')
+                    @method('PATCH')
                     <button type="submit" class="btn btn-link"><span class="oi oi-trash"></span></button>
                     </form>
                     @else

@@ -44,13 +44,13 @@ class DeleteUserTest extends DuskTestCase
                 ->assertDontSee($this->userData['email']);
         });
 
-        $this->assertDatabaseMissing('users', [
+        $this->assertSoftDeleted('users', [
             'id' => $this->user->id,
             'name' => $this->userData['name'],
             'email' => $this->userData['email'],
         ]);
 
-        $this->assertDatabaseMissing('user_profiles', [
+        $this->assertSoftDeleted('user_profiles', [
             'bio' => $this->userData['bio'],
             'twitter' => $this->userData['twitter'],
             'user_id' => $this->user->id,

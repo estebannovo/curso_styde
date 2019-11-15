@@ -17,12 +17,28 @@ class SkillController extends Controller
         ]);
     }
 
-    public function destroy(Skill $skill)
+    public function destroy($id)
     {
-        abort_if($skill->users()->exists(), 400, 'Cannot delete a skill linked to a profile.');
+        $skill = Skill::onlyTrashed()->where('id', $id)->firstOrFail();
 
+        $skill->forceDelete();
+
+        return redirect()->route('trashed.index');
+    }
+
+    public function trash(Skill $skill)
+    {
+        abort_if($skill->users()->exists(), 400, 'Cannot delete a skill linked to a user.');
         $skill->delete();
 
-        return redirect(route('skill.index'));
+        return redirect()->route('skill.index');
+    }
+
+    public function restore($id)
+    {
+        $skill = Skill::onlyTrashed()->where('id', $id)->firstOrFail();
+        $skill->restore();
+
+        return redirect()->route('skill.index');
     }
 }

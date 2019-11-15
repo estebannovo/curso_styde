@@ -44,7 +44,6 @@ class User extends Authenticatable
     public static function findByEmail($email)
     {
         return static::where(compact('email'))->first();
-
     }
 
     public function profession(){

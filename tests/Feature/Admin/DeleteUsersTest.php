@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\User;
 use App\UserProfile;
+use Carbon\Carbon;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -47,7 +48,7 @@ class DeleteUsersTest extends TestCase
         ]);
 
         $this->delete("usuarios/{$user->id}")
-            ->assertRedirect(route('users.trashed'));
+            ->assertRedirect(route('trashed.index'));
 
         $this->assertDatabaseEmpty('users');
     }
@@ -71,5 +72,47 @@ class DeleteUsersTest extends TestCase
             'id'=> $user->id,
             'deleted_at' => null
         ]);
+    }
+
+    /** @test */
+    function it_can_delete_old_users(){
+        //Create 50 users trashed 21 days ago
+        factory(User::class, 50)->create([
+            'deleted_at' => Carbon::now()->subDays(21)
+        ])->each(function ($user){
+            $user->profile()->create([
+                    'bio' => 'Programador',
+                    'deleted_at' => Carbon::now()->subDays(21)
+                ]
+            );
+        });
+
+        //Create 10 users trashed now
+        factory(User::class, 10)->create([
+            'deleted_at' => now()
+        ])->each(function ($user){
+            $user->profile()->create([
+                    'bio' => 'Programador',
+                    'deleted_at' => now()
+                ]
+            );
+        });
+
+        //Create 10 active users
+        factory(User::class, 10)->create(['deleted_at' => null])->each(function ($user){
+            $user->profile()->create(['bio' => 'Programador','deleted_at' => null]
+            );
+        });
+
+        $this->assertDatabaseCount('users', 70);
+        $this->assertDatabaseCount('user_profiles', 70);
+
+        $response = $this->get('/usuarios/destroyOldUsers');
+        $response->assertStatus(200);
+
+        $response->assertSeeText("We have deleted 50 users from the trash");
+
+        $this->assertDatabaseCount('users', 20);
+        $this->assertDatabaseCount('user_profiles', 20);
     }
 }
