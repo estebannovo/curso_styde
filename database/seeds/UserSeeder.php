@@ -62,10 +62,10 @@ class UserSeeder extends Seeder
 //        ]);
 
         //Creamos 46 usuarios y un perfil para cada uno, el perfil se genera también con su factory (UserProfileFactory.php) que usa $faker para generar datos dinámicamente
-        factory(User::class, 47)->create()->each(function ($user){
-            $user->profile()->create(
-                factory(UserProfile::class)->raw()
-            );
+        factory(User::class, 996)->create()->each(function ($user){
+            factory(UserProfile::class)->create([
+                'user_id' => $user->id
+            ]);
         });
     }
 }

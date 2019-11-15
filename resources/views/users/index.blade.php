@@ -48,6 +48,7 @@
         @endforeach
         </tbody>
     </table>
+        {{$users->render()}}
     @else
         <p>No hay usuarios registrados</p>
     @endif

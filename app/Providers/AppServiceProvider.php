@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        //Para cambiar los templates de paginación
+
+        //Paginator::defaultSimpleView('shared.simple-pagination');
+        //Paginator::defaultView('shared.pagination');
     }
 
     /**

@@ -33,6 +33,58 @@ class ListUsersTest extends TestCase
             ->assertSee('Ellie');
     }
 
+
+    /** @test */
+    function it_paginates_the_users()
+    {
+        factory(User::class)->create([
+            'name' => 'Tercer Usuario',
+            'created_at' => now()->subDay(5),
+        ]);
+
+        factory(User::class)->create([
+            'name' => 'Primer Usuario',
+            'created_at' => now()->subWeek(),
+        ]);
+
+        factory(User::class)->create([
+            'name' => 'Segundo Usuario',
+            'created_at' => now()->subDay(6),
+        ]);
+
+        factory(User::class)->times(12)->create([
+            'created_at' => now()->subDay(4),
+        ]);
+
+        factory(User::class)->create([
+            'name'=>'Decimosseptimo Usuario',
+            'created_at' => now()->subDay(2),
+        ]);
+
+        factory(User::class)->create([
+            'name'=>'Decimosexto Usuario',
+            'created_at' => now()->subDay(3),
+        ]);
+
+        $this->get('/usuarios')
+            ->assertStatus(200)
+            ->assertSeeInOrder([
+                'Decimosseptimo Usuario',
+                'Decimosexto Usuario',
+                'Tercer Usuario',
+            ])
+            ->assertDontSee('Segundo Usuario')
+            ->assertDontSee('Primer Usuario');
+
+        $this->get('/usuarios?page=2')
+            ->assertStatus(200)
+            ->assertSeeInOrder([
+                'Segundo Usuario',
+                'Primer Usuario'
+            ])
+            ->assertDontSee('Tercer Usuario');
+    }
+
     /** @test */
     function it_shows_a_defaut_message_if_the_users_list_is_empty()
     {

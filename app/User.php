@@ -25,6 +25,8 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
+    //protected $perPage = 15;
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -36,6 +38,11 @@ class User extends Authenticatable
 
     protected $casts = [
     ];
+
+    public function getPerPage()
+    {
+        parent::getPerPage() * 2;
+    }
 
     public function isAdmin(){
         return $this->role === 'admin';
