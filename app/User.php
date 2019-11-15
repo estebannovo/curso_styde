@@ -25,7 +25,7 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
-    //protected $perPage = 15;
+    protected $perPage = 15;
 
     /**
      * The attributes that should be hidden for arrays.
@@ -39,10 +39,10 @@ class User extends Authenticatable
     protected $casts = [
     ];
 
-    public function getPerPage()
-    {
-        parent::getPerPage() * 2;
-    }
+//    public function getPerPage()
+//    {
+//        parent::getPerPage() * 2;
+//    }
 
     public function isAdmin(){
         return $this->role === 'admin';
@@ -51,10 +51,6 @@ class User extends Authenticatable
     public static function findByEmail($email)
     {
         return static::where(compact('email'))->first();
-    }
-
-    public function profession(){
-        return $this->belongsTo(Profession::class);
     }
 
     public function skills(){

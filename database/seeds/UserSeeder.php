@@ -1,5 +1,6 @@
 <?php
 use App\Profession;
+use App\Skill;
 use App\User;
 use App\UserProfile;
 use Illuminate\Database\Seeder;
@@ -26,20 +27,25 @@ class UserSeeder extends Seeder
             'profession_id' => $professionId,
         ]);*/
 
-        $professionId = Profession::where('title','Desarrollador Back-End')->value('id');
+        //$professionId = Profession::where('title','Desarrollador Back-End')->value('id');
+
+        $professions = Profession::all();
+        $skills = Skill::all();
+
 
         //Generamos un usuario con datos Custom y lo guardamos en la variable $user
         $user = factory(User::class)->create([
             'name' => 'Duilio',
             'email' => 'dulio@styde.net',
             'password' =>  bcrypt('laravel'),
-            'role' => 'admin'
+            'role' => 'admin',
+            'created_at' => now()->addDay(),
         ]);
 
         //Usamos la variable $user para llamar a la funcion profile y crear/asignar un profile custom al usuario
         $user->profile()->create([
             'bio' => 'Programador, Profesor, editor, escritor, social media manager',
-            'profession_id' => $professionId,
+            'profession_id' => $professions->firstWhere('title', 'Desarrollador Back-End')->id,
         ]);
 
         //Creamos un usuario con una Biography custom y profession_id random
@@ -62,9 +68,13 @@ class UserSeeder extends Seeder
 //        ]);
 
         //Creamos 46 usuarios y un perfil para cada uno, el perfil se genera también con su factory (UserProfileFactory.php) que usa $faker para generar datos dinámicamente
-        factory(User::class, 996)->create()->each(function ($user){
+        factory(User::class, 996)->create()->each(function ($user) use($professions, $skills) {
+            $randomSkills  = $skills->random(rand(0,7));
+            $user->skills()->attach($randomSkills);
+
             factory(UserProfile::class)->create([
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'profession_id' => rand(0,2) ? $professions->random()->id : null,
             ]);
         });
     }

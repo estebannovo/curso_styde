@@ -12,4 +12,10 @@ class UserProfile extends Model
     //protected $fillable = ['bio', 'twitter', 'profession_id'];
 
     protected $guarded = [];
+
+    public function profession(){
+        return $this->belongsTo(Profession::class)->withDefault([
+            'title' => '(without Profession)'
+        ]);
+    }
 }

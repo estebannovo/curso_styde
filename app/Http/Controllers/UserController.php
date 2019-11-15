@@ -11,13 +11,12 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Symfony\Component\Console\Output\ConsoleOutput;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $users = User::orderBy('created_at', 'DESC')->paginate(15);
+        $users = User::orderByDesc('created_at')->paginate(15);
         //$users = User::orderBy('created_at', 'DESC')->simplePaginate(15);
 
         $title = 'Listado de usuarios';
