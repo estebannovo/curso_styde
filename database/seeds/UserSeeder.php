@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
         //Generamos un usuario con datos Custom y lo guardamos en la variable $user
         $user = factory(User::class)->create([
             'name' => 'Duilio',
-            'email' => 'dulio@styde.net',
+            'email' => 'duilio@styde.net',
             'password' =>  bcrypt('laravel'),
             'role' => 'admin',
             'created_at' => now()->addDay(),
