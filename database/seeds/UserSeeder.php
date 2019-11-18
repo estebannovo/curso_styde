@@ -1,12 +1,14 @@
 <?php
 use App\Profession;
-use App\Skill;
-use App\User;
-use App\UserProfile;
+use App\{Skill, User, UserProfile, Team};
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
 {
+    protected $professions;
+    protected $skills;
+    protected $teams;
+
     /**
      * Run the database seeds.
      *
@@ -29,24 +31,9 @@ class UserSeeder extends Seeder
 
         //$professionId = Profession::where('title','Desarrollador Back-End')->value('id');
 
-        $professions = Profession::all();
-        $skills = Skill::all();
+        $this->fetchRelations();
+        $this->createAdmin();
 
-
-        //Generamos un usuario con datos Custom y lo guardamos en la variable $user
-        $user = factory(User::class)->create([
-            'name' => 'Duilio',
-            'email' => 'duilio@styde.net',
-            'password' =>  bcrypt('laravel'),
-            'role' => 'admin',
-            'created_at' => now()->addDay(),
-        ]);
-
-        //Usamos la variable $user para llamar a la funcion profile y crear/asignar un profile custom al usuario
-        $user->profile()->create([
-            'bio' => 'Programador, Profesor, editor, escritor, social media manager',
-            'profession_id' => $professions->firstWhere('title', 'Desarrollador Back-End')->id,
-        ]);
 
         //Creamos un usuario con una Biography custom y profession_id random
         (factory(User::class)->create())->profile()->create([
@@ -68,14 +55,58 @@ class UserSeeder extends Seeder
 //        ]);
 
         //Creamos 46 usuarios y un perfil para cada uno, el perfil se genera también con su factory (UserProfileFactory.php) que usa $faker para generar datos dinámicamente
-        factory(User::class, 996)->create()->each(function ($user) use($professions, $skills) {
-            $randomSkills  = $skills->random(rand(0,7));
-            $user->skills()->attach($randomSkills);
+        foreach (range(1, 999) as $i) {
+            $this->createRandomUsers();
+        }
 
-            factory(UserProfile::class)->create([
-                'user_id' => $user->id,
-                'profession_id' => rand(0,2) ? $professions->random()->id : null,
-            ]);
-        });
+//        factory(User::class, 996)->create()->each(function ($user) use($professions, $skills) {
+//        });
+    }
+
+    /**
+     * @return array
+     */
+    protected function fetchRelations()
+    {
+        $this->professions = Profession::all();
+        $this->skills = Skill::all();
+        $this->teams = Team::all();
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function createAdmin()
+    {
+        //Generamos un usuario con datos Custom y lo guardamos en la variable $user
+        $admin = factory(User::class)->create([
+            'team_id' => $this->teams->firstWhere('name', 'Styde'),
+            'name' => 'Duilio',
+            'email' => 'duilio@styde.net',
+            'password' => bcrypt('laravel'),
+            'role' => 'admin',
+            'created_at' => now()->addDay(),
+        ]);
+
+        $admin->skills()->attach($this->skills);
+
+        //Usamos la variable $user para llamar a la funcion profile y crear/asignar un profile custom al usuario
+        $admin->profile()->create([
+            'bio' => 'Programador, Profesor, editor, escritor, social media manager',
+            'profession_id' => $this->professions->firstWhere('title', 'Desarrollador Back-End')->id,
+        ]);
+    }
+
+    protected function createRandomUsers(): void
+    {
+        $user = factory(User::class)->create([
+            'team_id' => rand(0, 2) ? null : $this->teams->random()->id,
+        ]);
+        $user->skills()->attach($this->skills->random(rand(0, 7)));
+
+        factory(UserProfile::class)->create([
+            'user_id' => $user->id,
+            'profession_id' => rand(0, 2) ? $this->professions->random()->id : null,
+        ]);
     }
 }
