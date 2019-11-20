@@ -2,8 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Profession;
-use App\User;
+use App\{Profession, Team, User};
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -18,12 +17,10 @@ class ListUsersTest extends TestCase
 
         factory(User::class)->create([
             'name' => 'Joel',
-            //'profession_id' => Profession::all()->random()->id
         ]);
 
         factory(User::class)->create([
             'name'=>'Ellie',
-            //'profession_id' => Profession::all()->random()->id
         ]);
 
         $this->get('/usuarios')
@@ -103,12 +100,10 @@ class ListUsersTest extends TestCase
         factory(User::class)->create([
             'name' => 'Joel',
             'deleted_at' => now(),
-            //'profession_id' => Profession::all()->random()->id
         ]);
 
         factory(User::class)->create([
             'name'=>'Ellie',
-            //'profession_id' => Profession::all()->random()->id
         ]);
 
         $this->get('/trahed-items/')
@@ -116,5 +111,31 @@ class ListUsersTest extends TestCase
             ->assertSee('Deleted users')
             ->assertSee('Joel')
             ->assertDontSee('Ellie');
+    }
+
+    /** @test */
+    function it_shows_the_team_on_the_users_list()
+    {
+        $team = factory(Team::class)->create(['name'=> 'Styde']);
+
+        $joel = factory(User::class)->create([
+            'name' => 'Joel',
+            'team_id' => $team->id,
+        ]);
+
+        $ellie = factory(User::class)->create([
+            'name'=>'Ellie',
+        ]);
+
+        factory(User::class)->times(13)->create();
+
+        $this->get('/usuarios')
+            ->assertStatus(200)
+            ->assertSee('Listado de usuarios')
+            ->assertSee('Joel')
+            ->assertSee('Styde')
+            ->assertViewHas('users', function($users) use($joel, $ellie, $team) {
+                return $users->contains($joel) && $users->contains($ellie) && $users->firstWhere('name', 'Joel')->team->name == 'Styde';
+            });
     }
 }
